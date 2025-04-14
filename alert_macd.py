@@ -88,15 +88,10 @@ def detect_bullish_macd_divergence(df, num_crosses):
 
 def send_discord_alert(symbol):
     now = datetime.now(ZoneInfo("Asia/Manila")).strftime('%Y-%m-%d %H:%M %Z')
-    message = f"""🚨 **1HR BP Right Hand**
+    message = f"""🔔 **1HR BP Right Hand**🟢
 
 **Symbol**: {symbol}
 **Time**: {now}
-
-**Conditions Met**:
-- 15M RSI(30) between 30–38 ✅
-- 5M Price: Lower Low 🔻
-- 5M MACD Line: Higher Low 🔺
 ===============================
 """
     payload = {"content": message}
@@ -237,16 +232,10 @@ def detect_bullish_macd_divergence(df, num_crosses):
 
 def send_discord_alert(symbol):
     now = datetime.now(ZoneInfo("Asia/Manila")).strftime('%Y-%m-%d %H:%M %Z')
-    message = f"""🚨 **4HR BP Right Hand** 🚨
+    message = f"""🔔 **4HR BP Right Hand** 🟢
 
 **Symbol**: {symbol}
 **Time**: {now}
-
-**Conditions Met**:
-- 1H RSI(30) between 30–38 ✅
-- 15M Price: Lower Low 🔻
-- 15M MACD Line: Higher Low 🔺
-
 ==============================="""
     response = requests.post(DISCORD_WEBHOOK_URL, json={"content": message})
     if response.status_code == 204:
@@ -371,15 +360,10 @@ def detect_bullish_macd_divergence(df, num_crosses):
 
 def send_discord_alert(symbol):
     now = datetime.now(ZoneInfo("Asia/Manila")).strftime('%Y-%m-%d %H:%M %Z')
-    message = f"""🚨 **1Day BP Right Hand**
+    message = f"""🔔 **1Day BP Right Hand**🟢
 
 **Symbol**: {symbol}
 **Time**: {now}
-
-**Conditions Met**:
-- 4H RSI(30) between 30–38 ✅
-- 1H Price: Lower Low 🔻
-- 1H MACD Line: Higher Low 🔺
 ===============================
 """
     payload = {"content": message}
@@ -500,15 +484,10 @@ def detect_bearish_macd_divergence(df, num_crosses):
 
 def send_discord_alert(symbol):
     now = datetime.now(ZoneInfo("Asia/Manila")).strftime('%Y-%m-%d %H:%M %Z')
-    message = f"""🚨 **4HR BP Left Hand**
+    message = f"""🔔 **4HR BP Left Hand**🔴
 
 **Symbol**: {symbol}
 **Time**: {now}
-
-**Conditions Met**:
-- 1H RSI(30) between 60–70 ✅
-- 15M Price: Higher High 🔺
-- 15M MACD Line: Lower High 🔻
 ===============================
 """
     payload = {"content": message}
