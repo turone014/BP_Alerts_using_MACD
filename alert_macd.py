@@ -673,5 +673,143 @@ def check_symbol(symbol):
 if __name__ == "__main__":
     for symbol in SYMBOLS:
         check_symbol(symbol)
+        
+        
+        
+#=============**=//=======
+
+#4hr bp with 3-5 crosses and if RSI is above in 4hrs HTS
+
+import ccxt
+import pandas as pd
+import requests
+import time
+from ta.momentum import RSIIndicator
+from ta.trend import MACD
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
+# Configuration
+DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1371287714242236559/nNZf40b5S6viZ9qx2BMCea4PydFLTacSZTArcvxcKAVyVKaBoIZ_gKuODdjihd8tdcvD'  # Replace with your actual webhook
+SYMBOLS = [
+    'BTC-USDT-SWAP', 'ETH-USDT-SWAP', 'SOL-USDT-SWAP', 'XRP-USDT-SWAP', 'DOGE-USDT-SWAP', 'SUI-USDT-SWAP', 'BNB-USDT-SWAP', 'ADA-USDT-SWAP', 'AVAX-USDT-SWAP', 'OM-USDT-SWAP', 'LTC-USDT-SWAP', 'PEPE-USDT-SWAP', 'TRUMP-USDT-SWAP', 'ALCH-USDT-SWAP', 'BCH-USDT-SWAP', 'LINK-USDT-SWAP', 'TON-USDT-SWAP', 'TRX-USDT-SWAP', 'FARTCOIN-USDT-SWAP', 'AAVE-USDT-SWAP', 'CRV-USDT-SWAP', 'FIL-USDT-SWAP', 'DOT-USDT-SWAP', 'APT-USDT-SWAP', 'ONDO-USDT-SWAP', 'EOS-USDT-SWAP', 'SHIB-USDT-SWAP', 'LAYER-USDT-SWAP', 'ETC-USDT-SWAP', 'ORDI-USDT-SWAP', 'IP-USDT-SWAP', 'UNI-USDT-SWAP', 'PROMPT-USDT-SWAP', 'PNUT-USDT-SWAP', 'WLD-USDT-SWAP', 'OP-USDT-SWAP', 'NEAR-USDT-SWAP', 'HBAR-USDT-SWAP', 'MOVE-USDT-SWAP', 'PI-USDT-SWAP', 'XLM-USDT-SWAP', 'WIF-USDT-SWAP', 'HYPE-USDT-SWAP', 'LDO-USDT-SWAP', 'BABY-USDT-SWAP', 'VINE-USDT-SWAP', 'ZKJ-USDT-SWAP', 'AUCTION-USDT-SWAP', 'TIA-USDT-SWAP', 'SATS-USDT-SWAP', 'ATOM-USDT-SWAP', 'UXLINK-USDT-SWAP', 'ARB-USDT-SWAP', 'BERA-USDT-SWAP', 'PEOPLE-USDT-SWAP', 'BIGTIME-USDT-SWAP', 'KAITO-USDT-SWAP', 'CORE-USDT-SWAP', 'MKR-USDT-SWAP','ZRO-USDT-SWAP','GAS-USDT-SWAP','POPCAT-USDT-SWAP','CFX-USDT-SWAP','JUP-USDT-SWAP','AI16Z-USDT-SWAP','PARTI-USDT-SWAP','POL-USDT-SWAP','ACT-USDT-SWAP','S-USDT-SWAP','X-USDT-SWAP','DYDX-USDT-SWAP','TRB-USDT-SWAP','RENDER-USDT-SWAP','BONK-USDT-SWAP','XTZ-USDT-SWAP','NEO-USDT-SWAP','AIXBT-USDT-SWAP','MASK-USDT-SWAP','INJ-USDT-SWAP','STX-USDT-SWAP','ALGO-USDT-SWAP','GUN-USDT-SWAP','CRO-USDT-SWAP','LUNC-USDT-SWAP','ATH-USDT-SWAP','LPT-USDT-SWAP','MEW-USDT-SWAP','GALA-USDT-SWAP','ETHFI-USDT-SWAP','SONIC-USDT-SWAP','AXS-USDT-SWAP','TAO-USDT-SWAP','PENGU-USDT-SWAP','GRASS-USDT-SWAP','SAND-USDT-SWAP','API3-USDT-SWAP','ICP-USDT-SWAP','ENS-USDT-SWAP','JTO-USDT-SWAP','COMP-USDT-SWAP','NOT-USDT-SWAP','FLOKI-USDT-SWAP','NEIROETH-USDT-SWAP','W-USDT-SWAP','ACH-USDT-SWAP','BLUR-USDT-SWAP','IMX-USDT-SWAP','SHELL-USDT-SWAP','MANA-USDT-SWAP','STRK-USDT-SWAP','PYTH-USDT-SWAP','AR-USDT-SWAP','VIRTUAL-USDT-SWAP','NEIRO-USDT-SWAP','SUSHI-USDT-SWAP','RSR-USDT-SWAP','JELLYJELLY-USDT-SWAP','APE-USDT-SWAP','DOGS-USDT-SWAP','ZEREBRO-USDT-SWAP','OL-USDT-SWAP','YGG-USDT-SWAP','MOODENG-USDT-SWAP','CHZ-USDT-SWAP','RAY-USDT-SWAP','BSV-USDT-SWAP','EIGEN-USDT-SWAP','LOOKS-USDT-SWAP','GOAT-USDT-SWAP','YFI-USDT-SWAP','CATI-USDT-SWAP','XAUT-USDT-SWAP','ARC-USDT-SWAP','BOME-USDT-SWAP','AGLD-USDT-SWAP','ME-USDT-SWAP','ZETA-USDT-SWAP','TURBO-USDT-SWAP','ANIME-USDT-SWAP','J-USDT-SWAP','SSV-USDT-SWAP','ZRX-USDT-SWAP','HMSTR-USDT-SWAP','MERL-USDT-SWAP','SWARMS-USDT-SWAP','VANA-USDT-SWAP','MEMEFI-USDT-SWAP','MORPHO-USDT-SWAP','MEME-USDT-SWAP','DUCK-USDT-SWAP','GRT-USDT-SWAP','AEVO-USDT-SWAP','BR-USDT-SWAP','QTUM-USDT-SWAP','THETA-USDT-SWAP','GMT-USDT-SWAP','SNX-USDT-SWAP','STORJ-USDT-SWAP','FLOW-USDT-SWAP','ARKM-USDT-SWAP','GMX-USDT-SWAP','XCH-USDT-SWAP','CETUS-USDT-SWAP','NC-USDT-SWAP','USTC-USDT-SWAP','CVC-USDT-SWAP','ETHW-USDT-SWAP','VELO-USDT-SWAP','IOTA-USDT-SWAP','GRIFFAIN-USDT-SWAP','UMA-USDT-SWAP','ONT-USDT-SWAP','EGLD-USDT-SWAP','IOST-USDT-SWAP','GPS-USDT-SWAP','MAGIC-USDT-SWAP','METIS-USDT-SWAP','1INCH-USDT-SWAP','CVX-USDT-SWAP','GLM-USDT-SWAP','ULTI-USDT-SWAP','BADGER-USDT-SWAP','CAT-USDT-SWAP','CTC-USDT-SWAP','AIDOGE-USDT-SWAP','DGB-USDT-SWAP','ZIL-USDT-SWAP','BUZZ-USDT-SWAP','CELO-USDT-SWAP','BIO-USDT-SWAP','BAT-USDT-SWAP','MAJOR-USDT-SWAP','DEGEN-USDT-SWAP','ID-USDT-SWAP','JST-USDT-SWAP','KSM-USDT-SWAP','WOO-USDT-SWAP','MINA-USDT-SWAP','KNC-USDT-SWAP','LRC-USDT-SWAP','CSPR-USDT-SWAP','RDNT-USDT-SWAP','TNSR-USDT-SWAP','BAL-USDT-SWAP','RON-USDT-SWAP','PRCL-USDT-SWAP','SWEAT-USDT-SWAP','VRA-USDT-SWAP','LQTY-USDT-SWAP','PERP-USDT-SWAP','RVN-USDT-SWAP','PIPPIN-USDT-SWAP','ONE-USDT-SWAP','ORBS-USDT-SWAP','MOVR-USDT-SWAP','SWELL-USDT-SWAP','SCR-USDT-SWAP','FOXY-USDT-SWAP','T-USDT-SWAP','COOKIE-USDT-SWAP','FXS-USDT-SWAP','BICO-USDT-SWAP','AVAAI-USDT-SWAP','FLM-USDT-SWAP','SLP-USDT-SWAP','BAND-USDT-SWAP','NMR-USDT-SWAP','ACE-USDT-SWAP','JOE-USDT-SWAP','BRETT-USDT-SWAP','PUFFER-USDT-SWAP','NFT-USDT-SWAP','DOG-USDT-SWAP','BNT-USDT-SWAP','ZENT-USDT-SWAP','SLERF-USDT-SWAP','ICX-USDT-SWAP','ALPHA-USDT-SWAP','SUNDOG-USDT-SWAP','GODS-USDT-SWAP','WAXP-USDT-SWAP','LSK-USDT-SWAP','SOLV-USDT-SWAP','LUNA-USDT-SWAP','ZK-USDT-SWAP','ENJ-USDT-SWAP',
+    # Add more trading pairs as needed
+]
+
+RSI_PERIOD = 30
+MACD_FAST = 12
+MACD_SLOW = 26
+MACD_SIGNAL = 9
+
+RSI_OVERSOLD_LOW = 30
+RSI_OVERSOLD_HIGH = 60
+
+TIMEFRAME_RSI = '1h'
+TIMEFRAME_MACD = '15m'
+CANDLE_LIMIT = 150
+
+exchange = ccxt.okx({'options': {'defaultType': 'swap'}})
+
+def fetch_candles(symbol, timeframe, limit):
+    try:
+        ohlcv = exchange.fetch_ohlcv(symbol, timeframe=timeframe, limit=limit)
+        if not ohlcv:
+            print(f"[ERROR] No data received for {symbol} on {timeframe} timeframe.")
+            return None
+        df = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+        df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
+        df.set_index('timestamp', inplace=True)
+        return df
+    except Exception as e:
+        print(f"[ERROR] Failed to fetch data for {symbol}: {e}")
+        return None
+
+def add_indicators(df):
+    if df.empty:
+        return df
+    df['rsi'] = RSIIndicator(close=df['close'], window=RSI_PERIOD).rsi()
+    macd = MACD(close=df['close'], window_fast=MACD_FAST, window_slow=MACD_SLOW, window_sign=MACD_SIGNAL)
+    df['macd_line'] = macd.macd()
+    df['macd_signal'] = macd.macd_signal()
+    return df
+
+def is_rsi_oversold(value):
+    return RSI_OVERSOLD_LOW <= value <= RSI_OVERSOLD_HIGH
+
+def detect_bullish_macd_divergence(df, num_crosses):
+    crosses = []
+    macd_line = df['macd_line']
+    macd_signal = df['macd_signal']
+    lows = df['low']
+
+    for i in range(1, len(df)):
+        prev_line = macd_line.iloc[i - 1]
+        prev_signal = macd_signal.iloc[i - 1]
+        curr_line = macd_line.iloc[i]
+        curr_signal = macd_signal.iloc[i]
+
+        if (prev_line < prev_signal and curr_line > curr_signal) or (prev_line > prev_signal and curr_line < curr_signal):
+            crosses.append((df.index[i], curr_line, lows.iloc[i]))
+
+    if len(crosses) < num_crosses:
+        return False
+
+    selected = crosses[-num_crosses:]
+    prices = [price for _, _, price in selected]
+    macds = [macd for _, macd, _ in selected]
+
+    return prices[-1] < prices[0] and macds[-1] > macds[0]
+
+def send_discord_alert(symbol):
+    now = datetime.now(ZoneInfo("Asia/Manila")).strftime('%Y-%m-%d %H:%M %Z')
+    message = f"""🔔 **4HR BP Right Hand** 🟢
+
+**Symbol**: {symbol}
+**Time**: {now}
+==============================="""
+    response = requests.post(DISCORD_WEBHOOK_URL, json={"content": message})
+    if response.status_code == 204:
+        print(f"[ALERT SENT] {symbol} at {now}")
+    else:
+        print(f"[ERROR] Failed to send alert for {symbol}: {response.status_code}")
+
+def check_symbol(symbol):
+    print(f"Checking {symbol}...")
+
+    df_rsi = fetch_candles(symbol, TIMEFRAME_RSI, CANDLE_LIMIT)
+    if df_rsi is None or df_rsi.empty:
+        print(f"[ERROR] No RSI data for {symbol}.")
+        return
+
+    df_rsi = add_indicators(df_rsi)
+    if df_rsi['rsi'].isna().all():
+        print(f"[ERROR] RSI not available for {symbol}.")
+        return
+
+    latest_rsi = df_rsi['rsi'].dropna().iloc[-1]
+    if not is_rsi_oversold(latest_rsi):
+        print(f"[{symbol}] 1H RSI not oversold: {latest_rsi:.2f}")
+        return
+
+    df_macd = fetch_candles(symbol, TIMEFRAME_MACD, CANDLE_LIMIT)
+    if df_macd is None or df_macd.empty:
+        print(f"[ERROR] No MACD data for {symbol}.")
+        return
+
+    df_macd = add_indicators(df_macd)
+    if df_macd['macd_line'].isna().all() or df_macd['macd_signal'].isna().all():
+        print(f"[ERROR] MACD not available for {symbol}.")
+        return
+
+    for crosses in [3, 4, 5]:
+        if detect_bullish_macd_divergence(df_macd, crosses):
+            send_discord_alert(symbol)
+            time.sleep(1)
+            return
+    print(f"[{symbol}] No bullish divergence detected in last 3-5 MACD crosses.")
+
+if __name__ == "__main__":
+    for symbol in SYMBOLS:
+        check_symbol(symbol)
 
 
