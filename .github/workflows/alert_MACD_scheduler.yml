@@ -1,9 +1,9 @@
 name: Scheduled Python Script
 
 on:
-  schedule:
-    - cron: '*/30 * * * *'  # Every hour
-  workflow_dispatch:     # Manual trigger option
+  #schedule:
+    #- cron: '*/30 * * * *'  # Every hour
+#  workflow_dispatch:     # Manual trigger option
 
 jobs:
   run-script:
